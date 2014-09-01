@@ -1,12 +1,12 @@
-#一点点说明
+#一点点说
+杨明代码维护
 
-这是[BeiYuu.com](http://beiyuu.com)的源码，如果你看了[使用Github Pages建独立博客](http://beiyuu.com/github-pages/)，希望看下去哦：
-
-* 马上动手，很赞
-* 感谢认可
-* 推荐阅读：[我为什么写博客？](http://beiyuu.com/why-blog/)
-* 想复用我的设计，没问题，标个出处就好啦
-* 转载也没问题，标个出处呗少年
-* 恩，认真的童鞋最可爱啦~
-
+blog:http://yangm90.github.io/Blog
+采用的模板是Jekyll
+git常用指令:
+git add . 
+git commit -m
+git remote add origin <server>
+git pull origin master
+git push -u origin master
 ###请删掉统计代码哦 /_layouts/default.html L38-41
