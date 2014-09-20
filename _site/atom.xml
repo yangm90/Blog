@@ -1,16 +1,90 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
  
-   <title>BeiYuu.com</title>
-   <link href="http://yangm90.giihub.com/atom.xml" rel="self" type="application/atom+xml"/>
-   <link href="http://yangm90.giihub.com" rel="alternate" type="text/html" />
-   <updated>2014-09-02T01:38:39+08:00</updated>
-   <id>http://yangm90.giihub.com</id>
+   <title>Yangming.com</title>
+   <link href="http://yangm90.github.io/Blog//atom.xml" rel="self" type="application/atom+xml"/>
+   <link href="http://yangm90.github.io/Blog/" rel="alternate" type="text/html" />
+   <updated>2014-09-21T02:06:54+08:00</updated>
+   <id>http://yangm90.github.io/Blog/</id>
    <author>
      <name></name>
      <email></email>
    </author>
 
+   
+   <entry>
+     <title>github 和jekyll方法</title>
+     <link href="http://beiyuu.com/first-commit"/>
+     <updated>2014-09-21T00:00:00+08:00</updated>
+     <id>http://beiyuu.com/first-commit</id>
+     <content type="html">&lt;h3&gt;github常用命令&lt;/h3&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;git clone git@github.com:username/xxxxxx.github.com.git//本地如果无远程代码，先做这步，不然就忽略&lt;/li&gt;
+    &lt;li&gt;git pull origin master //先同步远程文件，后面的参数会自动连接你远程的文件/li&gt;
+    &lt;li&gt;git status //查看本地自己修改了多少文件&lt;/li&gt;
+    &lt;li&gt;git添加文件:git add .&lt;/li&gt;
+    &lt;li&gt;git提交文件: git commit -m &quot;first commit&quot;&lt;/li&gt;
+    &lt;li&gt;git push origin master //更新到远程服务器上&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;jekyll常用命令&lt;/h3&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;jekyll打开本地服务jekyll serve&lt;/li&gt;
+    &lt;li&gt;关于jekyll的 Address already in use - bind(2):&lt;/br&gt;
+        先采用lsof -wni tcp:4000 或者使用 ps aux |grep &quot;jek&quot;
+        再采用kill -9 PID命令
+        &lt;/li&gt;
+    
+&lt;/ul&gt;
+
+
+&lt;h3&gt;vim常用命令&lt;/h3&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;复制单行:yy&lt;/li&gt;
+    &lt;li&gt;复制单个单词:yw&lt;/li&gt;
+    &lt;li&gt;粘贴单行:p&lt;/li&gt;
+    &lt;li&gt;删除单行:dd &lt;/li&gt;
+    &lt;li&gt;删除单个单词:diw&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;shell常用命令&lt;/h3&gt;
+
+&lt;ul&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+    &lt;li&gt;&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;linux上进程有5种状态:
+1. 运行(正在运行或在运行队列中等待)
+2. 中断(休眠中, 受阻, 在等待某个条件的形成或接受到信号)
+3. 不可中断(收到信号不唤醒和不可运行, 进程必须等待直到有中断发生)
+4. 僵死(进程已终止, 但进程描述符存在, 直到父进程调用wait4()系统调用后释放)
+5. 停止(进程收到SIGSTOP, SIGSTP, SIGTIN, SIGTOU信号后停止运行运行)&lt;/p&gt;
+
+&lt;p&gt;1）ps a 显示现行终端机下的所有程序，包括其他用户的程序。
+2）ps -A   显示所有程序。
+3）ps c    列出程序时，显示每个程序真正的指令名称，而不包含路径，参数或常驻服务的标示。
+4）ps -e  此参数的效果和指定&quot;A&quot;参数相同。
+5）ps e   列出程序时，显示每个程序所使用的环境变量。
+6）ps f    用ASCII字符显示树状结构，表达程序间的相互关系。
+7）ps -H    显示树状结构，表示程序间的相互关系。
+8）ps -N   显示所有的程序，除了执行ps指令终端机下的程序之外。
+9）ps s     采用程序信号的格式显示程序状况。
+10）ps S     列出程序时，包括已中断的子程序资料。
+11）ps -t &amp;lt;终端机编号&gt; 　指定终端机编号，并列出属于该终端机的程序的状况。
+12）ps u 　 以用户为主的格式来显示程序状况。
+13）ps x 　 显示所有程序，不以终端机来区分。
+14）ps -l     較長,較詳細的顯示該PID的信息&lt;/p&gt;
+</content>
+   </entry>
    
    <entry>
      <title>VPS环境搭建详解 (Virtualenv+Gunicorn+Supervisor+Nginx)</title>
@@ -1612,33 +1686,6 @@ var tz = Math.round( ( panelSize / 2 ) /
 &lt;h2&gt;TL;DR&lt;/h2&gt;
 
 &lt;p&gt;错过这篇废话而无用的文章，你是赚到啦！&lt;/p&gt;
-</content>
-   </entry>
-   
-   <entry>
-     <title>随内容滚动隐藏的工具栏</title>
-     <link href="http://beiyuu.com/auto-edit-bar"/>
-     <updated>2012-12-27T00:00:00+08:00</updated>
-     <id>http://beiyuu.com/auto-edit-bar</id>
-     <content type="html">&lt;p&gt;最先在&lt;a href=&quot;https://itunes.apple.com/us/app/google+/id447119634?mt=8&quot;&gt;Google+&lt;/a&gt;的APP上看到这种交互细节，而后在&lt;a href=&quot;http://www.meilishuo.com/welcome&quot;&gt;美丽说&lt;/a&gt;的新版上也看到了，上图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;/images/other/auto-edit-bar.jpg&quot; alt=&quot;Auto Edit Bar&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;图中画蓝色线框的部分既是。打开APP，下面的工具栏部分是显示的，当手指滑动内容，如果是向下浏览更多内容，工具栏自动收起，如果向上回滚，工具栏又会显示。&lt;/p&gt;
-
-&lt;p&gt;好处显而易见，当APP认为你在浏览，收起留出更多的屏幕空间，不遮挡、影响内容的显示，需要时再出现。&lt;/p&gt;
-
-&lt;p&gt;起初看到这个交互，还有些不习惯，体会到他的优势之后，顿时又觉得不支持这样的APP实在太out。&lt;/p&gt;
-
-&lt;p&gt;Google+和美丽说还有些不同的细节：&lt;/p&gt;
-
-&lt;ul&gt;
-    &lt;li&gt;Google+是在手指动作触发刚开始时就起效，而美丽说做在了手指滑动之后，因为有个缓冲时间，所以略感迟钝。&lt;/li&gt;
-    &lt;li&gt;美丽说在工具栏收起之后，留有一个小按钮，其实当用户熟悉这个交互后，略显多余。&lt;/li&gt;
-&lt;/ul&gt;
-
-
-
 </content>
    </entry>
    
