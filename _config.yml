@@ -5,7 +5,7 @@ highlighter: true
 paginate: 8
 permalink: /:title
 
-title: BeiYuu.com
-url: http://yangm90.giihub.com
+title: Yangming.com
+url: http://yangm90.github.io/Blog/ 
 feed: /atom.xml
-author_info: <a href="http://beiyuu.com/">BeiYuu</a>
+author_info: <a href="http://yangm90.github.io/Blog/">ym</a>
