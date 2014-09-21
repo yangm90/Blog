@@ -5,8 +5,15 @@ description: 存在感对于每个人的生活有多么的重要，可能平时�
 category: blog
 ---
 
+<ul>
+	<li>jekyll打开本地服务jekyll serve</li>
+	<li>关于jekyll的 Address already in use - bind(2):</br>
+		先采用lsof -wni tcp:4000 或者使用 ps aux |grep "jek"</br>
+		再采用kill -9 PID命令
+		</li>
+	
+</ul>
 
 
 
-
-[BeiYuu]:    http://beiyuu.com  "BeiYuu"
+[yangming]:  
