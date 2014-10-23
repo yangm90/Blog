@@ -4,13 +4,269 @@
    <title>Yangming.com</title>
    <link href="http://yangm90.github.io/Blog//atom.xml" rel="self" type="application/atom+xml"/>
    <link href="http://yangm90.github.io/Blog/" rel="alternate" type="text/html" />
-   <updated>2014-09-21T12:03:26+08:00</updated>
+   <updated>2014-10-17T14:53:19+08:00</updated>
    <id>http://yangm90.github.io/Blog/</id>
    <author>
      <name></name>
      <email></email>
    </author>
 
+   
+   <entry>
+     <title>android的ListView常见问题</title>
+     <link href="http://beiyuu.com/android-diandi"/>
+     <updated>2014-10-16T00:00:00+08:00</updated>
+     <id>http://beiyuu.com/android-diandi</id>
+     <content type="html">&lt;h3&gt;android listView addHeaderView的问题&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;隐藏headerView的思路:使用View.GONE属性隐藏
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;&amp;lt;LinearLayout android:id=&amp;quot;@+id/item_root&amp;quot;
+    android:layout_width=&amp;quot;fill_parent&amp;quot;
+    android:layout_height=&amp;quot;50dip&amp;quot;
+    android:orientation=&amp;quot;vertical&amp;quot; &amp;gt;
+&amp;lt;TextView  android:id=&amp;quot;@+id/tv_1&amp;quot; /&amp;gt;
+&amp;lt;TextView  android:id=&amp;quot;@+id/tv_2&amp;quot; /&amp;gt;
+&amp;lt;/LinearLayout &amp;gt;&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;pre&gt;&lt;code&gt;此时，有如下逻辑：
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;ListView listView = xxxx;
+  listView.addHearderView(item_root);
+  listView.setAdapter(adapter);
+  adapter.add(xxxxx);添加数据
+  item_root.setVisibility(View.GONE);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;pre&gt;&lt;code&gt;实测发现使用View.GONE方法后，头部依然会占用相应的高度无法隐藏。
+原因是：如果直接修改根布局的属性，就会造成headerView的显示有问题。
+所以修改成操作item_root里头的View显示就好了。
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;h3&gt;添加HeaderView之后尺寸布局被忽略&lt;/h3&gt;
+
+&lt;pre&gt;&lt;code&gt;通常添加头部的方法是 
+&lt;/code&gt;&lt;/pre&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;LayoutInflater lif = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+View headerView = lif.inflate(R.layout.header, null);
+mListView.addHeaderView(headerView);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;原因：
+lif.inflate(R.layout.header, null)丢失了XML布局中根View的LayoutParam，应该使用的是&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;lif.inflate(R.layout.header, mListView, false);&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;h3&gt;添加HeaderView之后导致OnItemClickListener的position移位&lt;/h3&gt;
+
+&lt;p&gt;OnItemClickListener接口的方法：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;void onItemClick(AdapterView&amp;lt;?&amp;gt; parent, View view, int position, long id)&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;position通常是从0开始的，但是添加了HeaderView之后，position也会将HeaderView的数目计算进去。
+几个解决办法：
+1.手动计算真实的position位置：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;final headerCount = 1;
+mListView.setOnItemClickListener(new OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView&amp;lt;?&amp;gt; parent, View view,
+            int position, long id) {
+        Item item = myAdapter.getItem(position - headerCount);
+    }
+});&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;2.其实上面的步骤ListView已经为我们提供了，所以可以改写为：&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;mListView.setOnItemClickListener(new OnItemClickListener() {
+    @Override
+    public void onItemClick(AdapterView&amp;lt;?&amp;gt; parent, View view,
+            int position, long id) {
+        Item item = parent.getAdapter().getItem(position);
+    }
+});&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;原因在源码中有比较清晰的解释：
+当有headerView被添加时，实际传递给ListView的adapter被包装，parent.getAdapter()返回真实被ListView使用的Adapter（HeaderViewListAdapter），HeaderViewListAdapter的getItem(int)方法处理了position的问题。&lt;/p&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>androidL预言</title>
+     <link href="http://beiyuu.com/android_L"/>
+     <updated>2014-09-30T00:00:00+08:00</updated>
+     <id>http://beiyuu.com/android_L</id>
+     <content type="html">&lt;h2&gt;64bit / ART (重要)&lt;/h2&gt;
+
+&lt;ul&gt;
+&lt;li&gt;Android 4.4 之下ART为可选Runtime, 默认仍然为Delivik, AndroidL默认Runtime为ART&lt;/li&gt;
+&lt;li&gt;支持ARM, x86 and MIPS processors&lt;/li&gt;
+&lt;li&gt;兼容 64-bit CPU&lt;/li&gt;
+&lt;li&gt;x2 faster&lt;/li&gt;
+&lt;li&gt;多数应用不需要更改就可以在ART上运行&lt;/li&gt;
+&lt;li&gt;ART最终会使用(目前不是) Compacting garbage collector, 对象会在GC后改变地址, 所以JNI代码可能会有兼容问题. (可以使用工具检查: ​http://android-developers.blogspot.hk/2011/07/debugging-android-jni-with-checkjni.html)&lt;/li&gt;
+&lt;li&gt;Delivik中Java的Stack和Native的Stack是分开的, ART则是共用的.&lt;/li&gt;
+&lt;li&gt;有些程序可能依赖/system/framework, /data/dalvik-cache下的odex文件, 现在这些文件会变成ELF格式的, 所以最好不要干这种事情.&lt;/li&gt;
+&lt;li&gt;ART编译器可以十分可靠的处理标准JAVA字节码,但是不见得能很好的处理Delivik字节码,尤其是经过混淆/优化的字节码可能会遭遇ART编译失败.&lt;/li&gt;
+&lt;li&gt;System.gc() 不再很有效, 用多了反而会有害, 总之不能依靠这个, 可以通过判断当前的Runtime是不是ART来决定是否调用gc()&lt;/li&gt;
+&lt;li&gt;部分JNI函数开始抛异常了(所谓的更加严格的JNI规范, 可以使用CheckJNI工具进行检查)&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;通知栏&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;UI风格发生变化&lt;/li&gt;
+&lt;li&gt;Head-off通知栏, 以悬浮窗的模式显示在屏幕顶部&lt;/li&gt;
+&lt;li&gt;使用 Ringtone/ MediaPlayer / Vibrator 发出声音的Notification应该把代码去掉, 或者使用 Notification.Builder来设置声音和震动.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;ActivityManager.getRecentTasks() (重要)&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;出于隐私问题, 这个API已经标记为失效, 出于兼容性考虑, 仍然会返回部分数据.&lt;/li&gt;
+&lt;li&gt;应用可以通过android.app.ActivityManager?.getAppTasks() 检索自己的Task&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;UI&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;View shadows (原来只是支持x/y方向的shadow, 现在支持z方向, 很多情况下阴影不需要做到切图里了)&lt;/li&gt;
+&lt;li&gt;RecyclerView (一个更高级的ListView, 在性能/内存使用上有优化)&lt;/li&gt;
+&lt;li&gt;CardView&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;Lockscreen Notifications&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;VISIBILITY_PRIVATE: 显示通知的基本信息, 比如图标,内容不展示&lt;/li&gt;
+&lt;li&gt;VISIBILITY_PUBLIC: 所有通知内容都显示&lt;/li&gt;
+&lt;li&gt;VISIBILITY_SECRET: 啥都不显示
+锁屏时显示通知.
+&lt;img src=&quot;/images/android/androidL_1.png&quot; title=&quot;Optional title&quot; alt=&quot;Alt text&quot; /&gt;
+
+&lt;h3&gt;New Recent App View&lt;/h3&gt;
+
+&lt;h3&gt;Improved Graphics&lt;/h3&gt;&lt;/li&gt;
+&lt;li&gt;支持OpenGL ES 3.1&lt;/li&gt;
+&lt;li&gt;Android Extension Pack&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;Concurrent documents and activities in the Recents screen&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;统一个应用可以有多个任务并存, 可以相互切换.&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;存储&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;DocumentsProvider : 允许用户选中目录, 对整个目录以及子目录设置读写权限(不需要用户逐一确认)&lt;/li&gt;
+&lt;li&gt;android.content.Context.getExternalMediaDirs() 提供了一个新的存储APP相关的媒体文件的机制, 可以帮助MediaStore更快的索引媒体文件. (重要)&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;无线网络&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;多个网络连接并存 (重要)&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;h3&gt;Bluetooth 4.1&lt;/h3&gt;
+
+&lt;p&gt;蓝牙4.3 / Bluetooth Low Energy
+Volta / Battery Histrian
+JobScheduler?
+更加详细的应用耗电信息, 提供了分析工具, 对APP优化应该有很大帮助&lt;/p&gt;
+
+&lt;h3&gt;Sec. &amp;amp; Privacy&lt;/h3&gt;
+
+&lt;h3&gt;WebView&lt;/h3&gt;
+
+&lt;p&gt;新增支持 :&lt;/p&gt;
+
+&lt;p&gt;WebAudio
+- WebGL
+- WebRTC&lt;/p&gt;
+
+&lt;h3&gt;Google play service , system update&lt;/h3&gt;
+
+&lt;ul&gt;
+&lt;li&gt;可以通过Google play下载漏洞补丁
+
+&lt;h3&gt;NFC&lt;/h3&gt;&lt;/li&gt;
+&lt;li&gt;Android Beam加入到分享菜单中
+
+&lt;h3&gt;API示例&lt;/h3&gt;
+
+&lt;h3&gt;参考&lt;/h3&gt;&lt;/li&gt;
+&lt;li&gt;​http://developer.android.com/preview/api-overview.html&lt;/li&gt;
+&lt;li&gt;​http://developer.android.com/preview/reference.html&lt;/li&gt;
+&lt;li&gt;​http://developer.android.com/preview/material/index.html&lt;/li&gt;
+&lt;/ul&gt;
+
+
+&lt;p&gt;PNG压缩工具
+在线： ​https://tinypng.com/ 目前可用host（54.194.15.171 tinypng.com）&lt;/p&gt;
+
+&lt;p&gt;工具：PNGGauntlet ​http://www.downxia.com/downinfo/25032.html&lt;/p&gt;
+
+&lt;h2&gt;#&lt;/h2&gt;
+</content>
+   </entry>
+   
+   <entry>
+     <title>android辅助工具</title>
+     <link href="http://beiyuu.com/android-lint"/>
+     <updated>2014-09-25T00:00:00+08:00</updated>
+     <id>http://beiyuu.com/android-lint</id>
+     <content type="html">&lt;h2&gt;android lint工具&lt;/h2&gt;
+
+&lt;h3&gt;使用了高版本的API&lt;/h3&gt;
+
+&lt;p&gt;在开发中,常常会不小心用到了高版本的API, 这样会导致程序在低于API版本设备上崩溃. 这样的崩溃无法被catch&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;# 在工程目录下执行
+$ lint --check NewApi .&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;结果&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;src/com/cleanmaster/security/scan/ui/dialog/SecurityVirusDialog.java:94: Error: Call requires API level 11 (current min is 8): android.widget.TextView#setAlpha [NewApi]
+   subtitleTv.setAlpha(0.75f);
+              ~~~~~~~~
+src/com/cleanmaster/ui/widget/ShareBar.java:25: Error: Call requires API level 11 (current min is 8): new android.widget.LinearLayout [NewApi]
+        super(context, attrs, defStyle);
+        ~~~~~&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+&lt;p&gt;然而需要注意, Lint输出的这些信息并不一定真正会出问题. 所以你需要看代码确定一下:&lt;/p&gt;
+
+&lt;div class=&quot;highlight&quot;&gt;&lt;pre&gt;&lt;code class=&quot;language-java&quot; data-lang=&quot;java&quot;&gt;public void show(
+
+         if (SDKUtils.isAboveSDK14()) {
+             ///&amp;lt; 4.0以下没有这个方法，所以只在4.0及4.0以上增加以下alpha值处理
+             subtitleTv.setAlpha(0.75f);                                                                                                                                                    
+         }&lt;/code&gt;&lt;/pre&gt;&lt;/div&gt;
+
+
+
+</content>
+   </entry>
    
    <entry>
      <title>github 和jekyll方法</title>
@@ -1583,124 +1839,6 @@ var tz = Math.round( ( panelSize / 2 ) /
 
 
 
-</content>
-   </entry>
-   
-   <entry>
-     <title>只有好的棋手才会走运</title>
-     <link href="http://beiyuu.com/build-facebook"/>
-     <updated>2013-01-21T00:00:00+08:00</updated>
-     <id>http://beiyuu.com/build-facebook</id>
-     <content type="html">&lt;p&gt;能和Facebook这样的公司一起成长太幸福，对作者真是羡慕嫉妒恨。&lt;/p&gt;
-
-&lt;p&gt;Facebook快速并且顺利的成长，作者初期选择他，悬念并不大，不过在第一章谈到对公司的忠诚度倒是个不错的话题，树倒猢狲散、墙倒众人推，这就是现实，更何况赤裸裸的签订的打工合同，每个人都会做对自己最有利的选择，同样的，公司招聘也不是做慈善，所以忠诚在这里的定义是，在职期间尽心尽力做到自己该做的事情。&lt;/p&gt;
-
-&lt;p&gt;对于初创互联网公司来说，招聘是重中之重，任何苛刻都不为过，臭味相投的一流人才的内部推荐，是作者首推的方法。最早听到Facebook的“Fire Fast”原则有些惊讶，招聘成本如此之高，还有这样严厉的作为，足见对人的重视。&lt;/p&gt;
-
-&lt;p&gt;盛行工程师文化，并且对应聘者非常挑剔的公司，经理这个职位有时候会显得力量薄弱，所以书中讲团队管理章节的部分就比较没有新意，产品流程业界合格的公司大抵都如此罢。值得注意的一点就是Facebook的快，将迭代这个概念完好的贯彻执行，在Web时代，不完美不重要，错一点也不重要，慢了就很要命。当然，这需要高水平的“黑客”。&lt;/p&gt;
-
-&lt;p&gt;其实整本书趋于平淡，尤其身处行业内、并且经常捕风捉影关注此类信息，不过，我不在其中亲身感受，很多观感自然也是架空的，也无法完整体会Facebook的优秀之处。&lt;/p&gt;
-
-&lt;p&gt;最后一章，作者的投资理念很务实很合理，不过，窃以为这在互联网行业应该也是标配吧。&lt;/p&gt;
-
-&lt;p&gt;当然，祝作者报效祖国成功！&lt;/p&gt;
-
-&lt;p&gt;多废话一句：在我看来，豆瓣和Facebook有许多的相似之处，或许这只是我一厢情愿吧，哈哈。&lt;/p&gt;
-
-&lt;ul&gt;
-&lt;li&gt;豆瓣链接：&lt;a href=&quot;http://book.douban.com/subject/20471120/&quot; title=&quot;打造Facebook&quot;&gt;《打造Facebook》&lt;/a&gt;&lt;/li&gt;
-&lt;li&gt;在线阅读：&lt;a href=&quot;http://read.douban.com/ebook/500486/?referral_code=myg7ot50&quot;&gt;《打造Facebook》&lt;/a&gt;&lt;/li&gt;
-&lt;/ul&gt;
-
-</content>
-   </entry>
-   
-   <entry>
-     <title>令人焦虑的列表设计</title>
-     <link href="http://beiyuu.com/bad-list-design"/>
-     <updated>2013-01-17T00:00:00+08:00</updated>
-     <id>http://beiyuu.com/bad-list-design</id>
-     <content type="html">&lt;p&gt;用列表展现数据，再平常不过了，想想通讯录、微薄、播放列表、博客目录，都是。&lt;/p&gt;
-
-&lt;p&gt;先来看看全宇宙最奇葩、但是自认为全世界最好用的软件iTunes的播放列表：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://ww4.sinaimg.cn/large/8b8af2c8jw1e0wkevnm8yj.jpg&quot; alt=&quot;idiot iTunes&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;你能看出正在播放的是哪一首吗？我选择从蓝色条的《So What》开始播放，顺序播下去到当前首，鲜亮的蓝色条并没有动，动的是小喇叭，真瞧得起我的眼神！&lt;/p&gt;
-
-&lt;p&gt;好了，一般人无法体会我对iTunes恨。&lt;/p&gt;
-
-&lt;p&gt;虾米的播放列表设计有模仿iTunes的嫌疑，每次打开，我要瞅半天看到底播放到哪首了，今天再看，已经改成人类的逻辑了，虾米好样的！&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://ww4.sinaimg.cn/large/8b8af2c8jw1e0wkn980w6j.jpg&quot; alt=&quot;xiami&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;再来看下让我写这篇博客的起因：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://ww1.sinaimg.cn/large/8b8af2c8jw1e0wkr4pg14j.jpg&quot; alt=&quot;jiandan&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;这是&lt;a href=&quot;http://jandan.net/2013/01/17/benzs-museum.html&quot;&gt;煎蛋&lt;/a&gt;评论列表，你能一眼看去就明白那个OOXX的标记属于上一条还是下一条吗？真让人捉急。解决办法很简单，就把那些属于评论的Meta信息放在同一个维度就好了。&lt;/p&gt;
-
-&lt;p&gt;看看正面教材&lt;a href=&quot;http://www.google.com/reader/&quot;&gt;Google Reader&lt;/a&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://ww1.sinaimg.cn/large/8b8af2c8jw1e0wkx96e78j.jpg&quot; alt=&quot;Google Reader&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;未读、已读一目了然，还感叹过为什么把未读扫过就一点不想再多看了呢，仅仅改变背景色和字体就轻松达到这个目标，这就是好的设计。&lt;/p&gt;
-
-&lt;p&gt;哦，顺道吐槽一下傻逼的所谓欧洲时间格式，你能分清02/10/08和03/09/06里面的年月日吗？&lt;/p&gt;
-</content>
-   </entry>
-   
-   <entry>
-     <title>胡言乱语说简单</title>
-     <link href="http://beiyuu.com/about-simplify"/>
-     <updated>2013-01-08T00:00:00+08:00</updated>
-     <id>http://beiyuu.com/about-simplify</id>
-     <content type="html">&lt;h2&gt;最初的简单&lt;/h2&gt;
-
-&lt;p&gt;从第一代iPhone出来，简单这个概念，便疯样的传开来。我怀疑过这是否绝对正确，最终还是服了。&lt;/p&gt;
-
-&lt;p&gt;碎片化的生活让人类的注意力很难集中3分钟，且有千千万的选择，任何一点负面的感受，会立刻遭到用户唾弃。物质、文化匮乏的时代，故作繁杂，可以脱颖而出，但现在能打动你的肯定是左边。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://ww2.sinaimg.cn/bmiddle/5e0bba51gw1dyxy98zixmj.jpg&quot; alt=&quot;Apple Remote&quot; /&gt;&lt;/p&gt;
-
-&lt;h2&gt;简单才可依赖&lt;/h2&gt;
-
-&lt;p&gt;有些句子，看起来懂，也经常说，比如上面标题这句，但当我看到&lt;a href=&quot;http://v.youku.com/v_show/id_XNDkwMTg0MDI0.html&quot;&gt;《差速器原理》&lt;/a&gt;的视频时，才真正懂了这句话：&lt;/p&gt;
-
-&lt;p style=&quot;text-align:center&quot;&gt;&lt;embed src=&quot;http://player.youku.com/player.php/sid/XNDkwMTg0MDI0/v.swf&quot; quality=&quot;high&quot; width=&quot;480&quot; height=&quot;400&quot; align=&quot;middle&quot; allowScriptAccess=&quot;sameDomain&quot; allowFullscreen=&quot;true&quot; type=&quot;application/x-shockwave-flash&quot;&gt;&lt;/embed&gt;&lt;/p&gt;
-
-
-&lt;h2&gt;蔓延的简单&lt;/h2&gt;
-
-&lt;p&gt;大概是工作的关系，渐渐追求简单的思维蔓延到了生活中，甚至到了本没有标准的艺术范畴。来看下图：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://img1.bitautoimg.com/autoalbum/files/20120319/123/23575912395576_1844692_7.jpg&quot; alt=&quot;Focus Inside&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;搭朋友的车，这中控系统功能确实强大，但是不得不说这界面的设计师，还活在上个世纪，早该被解雇了。只因这不是选车最值得考虑的部分，不然朋友肯定会选择更好的。&lt;/p&gt;
-
-&lt;p&gt;甚至到了没有标准的艺术范畴，简单都成了标准：&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://ww3.sinaimg.cn/large/a74eed94jw1e0mmo1xa2kj.jpg&quot; alt=&quot;My Photo&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;也不知是否因为我看娱乐节目太多，导致智商降低，对于文学、电影作品，甚至都不能接受故弄玄虚，我不愿去想，也不愿去猜。比如&lt;a href=&quot;http://movie.douban.com/subject/3821067/&quot;&gt;《一代宗师》&lt;/a&gt;故事支离破碎，台词游离，就连王家卫最拿手的气氛渲染，也比&lt;a href=&quot;http://movie.douban.com/subject/1291557/&quot;&gt;《花样年华》&lt;/a&gt;差远了。复杂了，失焦了，我也没有耐心去思索。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://ww4.sinaimg.cn/bmiddle/62275834jw1e0mlp67dv4j.jpg&quot; alt=&quot;The Grandmasters&quot; /&gt;&lt;/p&gt;
-
-&lt;h2&gt;简单的背后&lt;/h2&gt;
-
-&lt;p&gt;做加法很容易，把所见所想全写上就好，做到简单却要经过谨慎的思考。&lt;/p&gt;
-
-&lt;p&gt;简单的背后不应该是简陋。对比&lt;a href=&quot;http://douban.fm/&quot;&gt;豆瓣FM&lt;/a&gt;和&lt;a href=&quot;http://xiami.fm/&quot;&gt;虾米FM&lt;/a&gt;就能理解，豆瓣FM简陋的背后带来了无尽的不安全感，无法控制的挫败感，纵然你能满足大部分用户，但也绝不应该放弃更苛刻的用户，因为作为创造者，你自己也是那些苛求的需要者。&lt;/p&gt;
-
-&lt;p&gt;当然，我知道豆瓣FM有他的苦衷，只是举个例子，做减法并不是舍弃，而是合理的隐藏。&lt;/p&gt;
-
-&lt;p&gt;&lt;img src=&quot;http://ww1.sinaimg.cn/large/a74ecc4cjw1e0mnhp3ijtj.jpg&quot; alt=&quot;The Next Day&quot; /&gt;&lt;/p&gt;
-
-&lt;p&gt;&lt;a href=&quot;https://itunes.apple.com/us/app/next-day/id491352621?mt=8&quot;&gt;Next Day&lt;/a&gt;就是这样，简单美妙，但是当你想要更多的时候，控制权也完全交到你手中，并且很高效。&lt;/p&gt;
-
-&lt;h2&gt;TL;DR&lt;/h2&gt;
-
-&lt;p&gt;错过这篇废话而无用的文章，你是赚到啦！&lt;/p&gt;
 </content>
    </entry>
    

@@ -16,4 +16,3 @@ git pull origin master   </BR>
 
 git push -u origin master </BR>
 
-###请删掉统计代码哦 /_layouts/default.html L38-41
